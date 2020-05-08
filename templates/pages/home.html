@@ -73,8 +73,14 @@
             } else {
                alert('An error occured. Please try again later.');
             }
+         } else if(xhr.status === 401) {
+            alert('You must login!');
+            window.location.href = '/login';
+         } else if(xhr.status === 403) {
+            alert('You must login!');
+            window.location.href = '/login';
          } else if (xhr.status === 500) {
-            alert('There was a server error. Please try again later.')
+            alert('There was a server error. Please try again later.');
          }
       }
       xhr.onerror = () => {
@@ -101,7 +107,7 @@
 
       xhr.onload = () => {
          const serverResponse = xhr.response;
-         let listedItems = serverResponse.response;
+         let listedItems = serverResponse;
          var finalTweetStr = '';
          let i;
          for (i = 0; i < listedItems.length; i++) {
