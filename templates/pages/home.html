@@ -126,15 +126,44 @@
    
    
 
-   function handleDidLike(tweet_id, currentCount) {
-      currentCount++;
-      return currentCount;
+   function handleTweetActionBtn(tweet_id, currentCount, action) {
+      const url = '/api/tweets/action';
+      const method = 'POST';
+      const data = JSON.stringify({
+         id: tweet_id,
+         action: action,
+      });
+      const xhr = new XMLHttpRequest();
+      const csrftoken = getCookie('csrftoken');
+      xhr.open(method, url);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest');
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      xhr.setRequestHeader('X-CSRFToken', csrftoken);
+      xhr.onload = () => {
+         loadTweets(tweetsContainerElement);
+      };
+      xhr.send(data);
+      
+      return;
    }
 
    function LikeBtn(tweet) {
       return (
-         `<button class='btn btn-primary btn-sm' onClick=${handleDidLike( tweet.id, tweet.likes )}>
-         ${tweet.likes} Like</button>`
+         "<button class='btn btn-primary btn-sm' onClick=handleTweetActionBtn("+ tweet.id+"," + tweet.likes + ",'like')>"
+         + tweet.likes + " Like</button>"
+      );
+   }
+
+   function UnLikeBtn(tweet) {
+      return (
+         "<button class='btn btn-outline-primary btn-sm' onClick=handleTweetActionBtn("+ tweet.id+"," + tweet.likes + ",'unlike')>Unlike</button>"
+      );
+   }
+
+   function RetweetBtn(tweet) {
+      return (
+         "<button class='btn btn-outline-success btn-sm' onClick=handleTweetActionBtn("+ tweet.id+"," + tweet.likes + ",'retweet')>Retweet</button>"
       );
    }
 
@@ -143,11 +172,29 @@
          `<div class='col-10 col-md-10 mx-auto py-3 border rounded mb-4 tweet' id='tweet-${tweet.id}'> 
             <p>${tweet.content}</p> 
             <div class='btn-group'>
-               ${LikeBtn(tweet)}
+               ${LikeBtn(tweet)} 
+               ${UnLikeBtn(tweet)} 
+               ${RetweetBtn(tweet)}
             </div> 
          </div>`;
       return formattedTweet;
    }
+
+   function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
    
 </script>
