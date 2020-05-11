@@ -1,6 +1,3 @@
-import React from 'react'
-
-
 export function loadTweets (callback) {
    const xhr = new XMLHttpRequest();
    const method = 'GET';
