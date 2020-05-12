@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { loadTweets } from '../lookup'
+import { loadTweets, createTweet } from '../lookup'
 
 export function TweetsComponent(props) {
    const textAreaRef = React.createRef();
@@ -10,11 +10,14 @@ export function TweetsComponent(props) {
       e.preventDefault();
       const newValue = textAreaRef.current.value;
       const tempNewTweets = [...newTweets];
-      tempNewTweets.unshift({
-         content: newValue,
-         likes: 0,
-         id: 123123
+      createTweet(newValue, (response, status) => {
+         if(status === 201) {
+            tempNewTweets.unshift(response);
+         } else {
+            alert('An error occured. Please try again later.');
+         }
       });
+      
       setNewTweets(tempNewTweets);
       textAreaRef.current.value = '';   
    }
@@ -35,6 +38,7 @@ export function TweetsComponent(props) {
 export function TweetsList(props) {
    const [tweetsInit, setTweetsInit] = useState([]);
    const [tweets, setTweets] = useState([]);
+   const [tweetsDidSet, setTweetsDidSet] = useState(false);
    useEffect(() => {
       const final = [...props.newTweets].concat(tweetsInit);
       if(final.length !== tweets.length) {
@@ -43,15 +47,18 @@ export function TweetsList(props) {
    }, [props.newTweets, tweets, tweetsInit]);
 
    useEffect(() => {
-     const myCallback = (response, status) => {
-       if(status === 200) {
-         setTweetsInit(response);
-       }else {
-         alert('There was an error.');
-       }
-     };
-     loadTweets(myCallback);
-   }, [tweetsInit]);
+      if(tweetsDidSet === false) {
+         const myCallback = (response, status) => {
+           if(status === 200) {
+             setTweetsInit(response);
+             setTweetsDidSet(true);
+           }else {
+             alert('There was an error.');
+           }
+         };
+         loadTweets(myCallback);
+      }
+   }, [tweetsInit, tweetsDidSet]);
  
    return tweets.map((item, index) => {
      return <Tweet tweet={item} key={`${index}-{item.id}`} className='my-5 py-5 border bg-white text-dark'/>

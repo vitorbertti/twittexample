@@ -2,13 +2,18 @@
 {% block head_title %} Twittexample {% endblock head_title %} 
 
 {% block content %} 
-<div class="row text-center">
+
+
+<div id="twittexample"></div>
+
+
+<div class="row text-center d-none">
    <div class="col">
       <h1>Welcome to Twittexample</h1>
    </div>
 </div>
 
-<div class="row mb-3">
+<div class="row mb-3 d-none">
    <div class="col-md-4 mx-auto col-10">
       <form class="form" id="tweet-create-form" method="POST" action="/create_tweet">
          {% csrf_token %}
@@ -22,7 +27,9 @@
    </div>
 </div>
 
-<div class="row" id='tweets'>
+
+
+<div class="row d-none" id='tweets'>
    Loading...
 </div>
 
@@ -194,7 +201,7 @@
         }
     }
     return cookieValue;
-}
+   }
 
    
 </script>
