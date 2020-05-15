@@ -8,11 +8,14 @@ export function apiTweetDetail(tweetId, callback) {
    backendLookup("GET", `/tweets/${tweetId}/`, callback)
 }
 
-export function apiTweetList(username, callback) {
+export function apiTweetList(username, callback, nextUrl) {
    let endpoint =  "/tweets/"
    if (username){
        endpoint =  `/tweets/?username=${username}`
    }
+   if (nextUrl !== null && nextUrl !== undefined) {
+      endpoint = nextUrl.replace(process.env.REACT_APP_SERVER_URL, "")
+  }
    backendLookup("GET", endpoint, callback)
 }
 
