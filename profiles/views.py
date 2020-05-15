@@ -7,6 +7,7 @@ from .forms import ProfileForm
 def profile_update_view(request, *args, **kwargs):
     if not request.user.is_authenticated: 
         return redirect("/login?next=/profile/update")
+
     user = request.user
     user_data = {
         "first_name": user.first_name,
@@ -15,6 +16,7 @@ def profile_update_view(request, *args, **kwargs):
     }
     my_profile = user.profile
     form = ProfileForm(request.POST or None, instance=my_profile, initial=user_data)
+
     if form.is_valid():
         profile_obj = form.save(commit=False)
         first_name = form.cleaned_data.get('first_name')
@@ -34,11 +36,21 @@ def profile_update_view(request, *args, **kwargs):
 
 def profile_detail_view(request, username, *args, **kwargs):
     qs = Profile.objects.filter(user__username=username)
+
     if not qs.exists():
         raise Http404
+
     profile_obj = qs.first()
+    is_following = False
+
+    if request.user.is_authenticated:
+        user = request.user
+        is_following = user in profile_obj.followers.all()
+        # is_following = profile_obj in user.following.all()
+        
     context = {
         "username": username,
-        "profile": profile_obj
+        "profile": profile_obj,
+        "is_following": is_following
     }
     return render(request, "profiles/detail.html", context) 

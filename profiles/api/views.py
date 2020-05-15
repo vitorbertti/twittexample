@@ -8,6 +8,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from ..serializers import PublicProfileSerializer
 from ..models import Profile
 
 User = get_user_model()
@@ -20,6 +21,14 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 #     to_follow_user = ??
 #     return Response({}, status=200)
 
+@api_view(['GET'])
+def profile_detail_api_view(request, username, *args, **kwargs):
+    qs = Profile.objects.filter(user__username=username)
+    if not qs.exists():
+        return Response({"detail": "User not found"}, status=404)
+    profile_obj = qs.first()
+    data = PublicProfileSerializer(instance=profile_obj)
+    return Response(data.data, status=200)
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])

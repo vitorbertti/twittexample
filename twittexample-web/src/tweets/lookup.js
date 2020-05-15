@@ -23,3 +23,11 @@ export function apiTweetAction(tweetId, action, callback){
    const data = { id: tweetId, action: action }
    backendLookup("POST", "/tweets/action/", callback, data)
 }
+
+export function apiTweetFeed(callback, nextUrl) {
+   let endpoint =  '/tweets/feed/';
+   if (nextUrl !== null && nextUrl !== undefined) {
+      endpoint = nextUrl.replace(process.env.REACT_APP_SERVER_URL, '');
+   }
+   backendLookup('GET', endpoint, callback);
+}
